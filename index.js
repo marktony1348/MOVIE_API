@@ -1,6 +1,10 @@
 const express = require('express');
 const morgan = require('morgan');
+const bodyParser = require('body-parser');
+const uuid = require('uuid');
+const { response } = require('express');
 const app = express();
+
 
 let myMovies = [
     {
@@ -17,17 +21,17 @@ let myMovies = [
       
     },
     {
-      title: 'Naruto Shippuden',
-      director: 'Masashi Kishimoto',
-      genre: ['Action', 'fiction'],
-      yearOfRelease: 2007
+      title: 'Jungle Book',
+      director: 'Jon Favreau',
+      genre: ['Family', 'Adventure'],
+      yearOfRelease: 2016
         
     },
     {
       title: 'Power',
-      director: ['Courtney Kemp', 'Gary Lennon', 'David Knoller', 'Curtis Jackson', 'Mark Canton', 'Randall Emmett'],
+      director: ['Courtney Kemp', 'Gary Lennon', 'David Knoller', 'Curtis Jackson'],
       genre: ['Drama', 'Crime'],
-      yearOf: 2014
+      yearOfRelease: 2014
     },
     {
       title: 'Big Trouble In Little China',
@@ -77,6 +81,8 @@ let myMovies = [
 app.use(morgan('common'));
 // static function for serving all the files at once
 app.use(express.static('public'));
+// body-parser function 
+app.use(bodyParser.json());
 
 
 
@@ -91,9 +97,63 @@ app.get('/documentation', (req, res) => {
     res.sendFile('public/documentation.html', { root: __dirname });
 });
 
-// brings a json request on routing
+// brings a json request on routing (ALL MOVIES)
 app.get('/movies', (req, res) => {
-    res.json(myMovies);
+    res.send(myMovies);
+});
+
+
+//Get movies by Title
+app.get('/movies/:title', (req, res) => {
+    res.json(
+      myMovies.find(movie => {
+        return movie.title === req.params.title;
+      })
+    );
+});
+
+
+//Get movies by Genre
+app.get('/genres/:genre', (req, res) => {
+    res.json(
+      myMovies.find(movieGenre => {
+        return movieGenre.genre === req.params.genre;
+      })
+    );
+});
+
+//Get movies by director
+app.get('/directors/:director', (req, res) => {
+    res.json(
+      myMovies.find(movieDirector => {
+        return movieDirector.director === req.params.director;
+      })
+    );
+});
+// Creation of a new users by UUID
+app.post('/users/:newUser', (req, res) => {
+    res.send('POST request with message (new user created!)');
+});
+
+//Update users information on app
+app.put('/users/:userName', (req, res) => {
+    res.send('PUT request with message (username updated!)');
+});
+
+// Creation of favourite movie list
+app.post('/movies/:addFavourite', (req, res) => {
+    res.send('POST request with message (movie added successfully!)');
+});
+
+//Removal of movies from favorite movie list
+app.delete('/movies/:movieTitle', (req, res) => {
+    res.send('DELETE request with message (movie deleted successfully!)');
+    
+});
+
+//Deregistration of a user (useremail)
+app.delete('/users/:username', (req, res) => {
+    res.send('DELETE request with message (useremail deregistered from the app!)');
 });
 
 // error handling middleware function
@@ -101,7 +161,6 @@ app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send('oop\'s something has gone wrong!');
 });
-
 
 // listen for requests
 app.listen(8080, () =>{

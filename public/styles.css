@@ -41,8 +41,9 @@ h1 {
 }
 .container {
     display: inline-block;
-    width: 600px;
+    width: 1000px;
     border: 1px solid var(--background-color);
+
      
 }
 * {

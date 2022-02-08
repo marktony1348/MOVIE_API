@@ -1,9 +1,24 @@
+const mongoose = require('mongoose');
+const Models = require('./models.js');
+
+const Movies = Models.Movie;
+const Users = Models.User;
+const Genres = Models.Genre;
+const Directors = Models.Director
+
+mongoose.connect('mongodb://localhost:27017/myFlixDb', 
+  { useNewUrlParser: true, useUnifiedTopology: true });
+
 const express = require('express');
-const morgan = require('morgan');
-const bodyParser = require('body-parser');
-const uuid = require('uuid');
-const { response } = require('express');
+  morgan = require('morgan');
+  bodyParser = require('body-parser');
+  uuid = require('uuid');
+
+const req = require('express/lib/request');
+const res = require('express/lib/response')
 const app = express();
+
+
 
 
 let myMovies = [
@@ -19,7 +34,8 @@ let myMovies = [
             Bio:"Masashi Kishimoto is a Japanese manga artist. His best known work, Naruto, was in serialization from 1999 to 2014 and has sold over 250 million copies worldwide in 46 countries as of May 2019.",
             Birth:"1974-11-08"
         },
-        Image:"https://www.imdb.com/title/tt0988824/mediaviewer/rm1490944256/?ref_=tt_ov_i",
+        Actors: ['Junko Takeuchi', 'Kate Higgins'],
+        ImagePath:"https://www.imdb.com/title/tt0988824/mediaviewer/rm1490944256/?ref_=tt_ov_i",
         Featured: true,
         yearOfRelease: 2007
     },
@@ -36,7 +52,8 @@ let myMovies = [
           Bio:"Makoto Yukimura is a Japanese manga artist. Yukimura made his debut with the hard science fiction manga Planetes, serialized in Weekly Morning magazine from 1999 to 2004 and adapted into a 26-episode anime series by Sunrise. Before that, he worked as an assistant for Shin Morimura",
           Birth:"1978-05-08"
       },
-      Image:"https://www.imdb.com/title/tt10233448/mediaviewer/rm678534401/?ref_=tt_ov_i",
+      Actors: ['Kellen Goff', 'Ben Diskin'],
+      ImagePath:"https://www.imdb.com/title/tt10233448/mediaviewer/rm678534401/?ref_=tt_ov_i",
       Featured: false,
       yearOfRelease: 2019    
     },
@@ -52,7 +69,8 @@ let myMovies = [
             Bio:"Jonathan Kolia Favreau is an American actor and filmmaker. As an actor, Favreau has appeared in the films Rudy, PCU, Swingers, Very Bad Things, Deep Impact. Plus he is the famous crooner of the award winning family film “jungle book",
             Birth:"1966-10-19"
         },
-        Image:"https://www.imdb.com/title/tt3040964/mediaviewer/rm1298457856/?ref_=tt_ov_i",
+        Actors: ['Bill Murray', 'Neel Sethi'],
+        ImagePath:"https://www.imdb.com/title/tt3040964/mediaviewer/rm1298457856/?ref_=tt_ov_i",
         Featured: false,
         yearOfRelease: 2016
     },
@@ -68,7 +86,8 @@ let myMovies = [
             Bio:"Curtis James Jackson III, better known by his stage name 50 Cent, is an American rapper, actor, and entrepreneur. Known for his impact in the hip hop industry plus his foray into directing has come up with the power series.",
             Birth:"1975-06-06"
         },
-        Image:"https://www.imdb.com/title/tt3281796/mediaviewer/rm3770784769/?ref_=tt_ov_i",
+        Actors: ['Omari Hardwick', 'Lela Loren'],
+        ImagePath:"https://www.imdb.com/title/tt3281796/mediaviewer/rm3770784769/?ref_=tt_ov_i",
         Featured: false,
       yearOfRelease: 2014
     },
@@ -84,7 +103,8 @@ let myMovies = [
             Bio:"John Howard Carpenter is an American filmmaker, actor and composer. Although Carpenter has worked with various film genres, he is associated most commonly with horror, action, and science fiction films of the 1970s and 1980s.",
             Birth:"1948-01-16"
         },
-        Image:"https://www.imdb.com/title/tt0090728/mediaviewer/rm3225041920/?ref_=tt_ov_i",
+        Actors: ['Kurt Russell', 'Kim Cattrall', 'Dennis Dun'],
+        ImagePath:"https://www.imdb.com/title/tt0090728/mediaviewer/rm3225041920/?ref_=tt_ov_i",
         Featured: false,
       yearOfRelease: 1986  
       
@@ -101,7 +121,8 @@ let myMovies = [
           Bio:"Quentin Jerome Tarantino is an American filmmaker, film director, screenwriter, producer, film critic, and actor. His films are characterized by nonlinear storylines, dark humor, stylized violence, foot fetishism, extended dialogue, ensemble casts, references to popular culture, alternate history, and neo-noir.",
           Birth:"1963-03-27"
       },
-      Image:"https://www.imdb.com/title/tt1853728/mediaviewer/rm958180352/?ref_=tt_ov_i",
+      Actors: ['Jamie Foxx', 'Christoph Waltz', 'Leonardo DiCaprio'],
+      ImagePath:"https://www.imdb.com/title/tt1853728/mediaviewer/rm958180352/?ref_=tt_ov_i",
       Featured: false,
       yearOfRelease: 2013
        
@@ -118,7 +139,8 @@ let myMovies = [
             Bio:"Thomas Tataranowicz is an American cartoon animator, storyboard artist, producer and director. His first credit was He-Man and the Masters of the Universe.",
             Birth:"1960-01-07"
         },
-        Image:"https://www.imdb.com/title/tt0147752/mediaviewer/rm2060928000/?ref_=tt_ov_i",
+        Actors: ['Dorian Harewood', 'Rob Paulsen', 'Ian Ziering'],
+        ImagePath:"https://www.imdb.com/title/tt0147752/mediaviewer/rm2060928000/?ref_=tt_ov_i",
         Featured: false,
       yearOfRelease: 1983
     },   
@@ -134,7 +156,8 @@ let myMovies = [
           Bio:"Quentin Jerome Tarantino is an American filmmaker, film director, screenwriter, producer, film critic, and actor. His films are characterized by nonlinear storylines, dark humor, stylized violence, foot fetishism, extended dialogue, ensemble casts, references to popular culture, alternate history, and neo-noir.",
           Birth:"1963-03-27"
       },
-      Image:"https://www.imdb.com/title/tt0361748/mediaviewer/rm3163035648/?ref_=tt_ov_i",
+      Actors: ['Brad Pitt', 'Eli Roth', 'Diane Kruger'],
+      ImagePath:"https://www.imdb.com/title/tt0361748/mediaviewer/rm3163035648/?ref_=tt_ov_i",
       Featured: false,
       yearOfRelease: 2009
        
@@ -152,7 +175,8 @@ let myMovies = [
             Birth:"1928-03-06",
             Death:"1997-02-04"
         },
-        Image:"https://www.imdb.com/title/tt0070034/mediaviewer/rm638853120/?ref_=tt_ov_i",
+        Actors: ['Bruce Lee', 'John Saxon'],
+        ImagePath:"https://www.imdb.com/title/tt0070034/mediaviewer/rm638853120/?ref_=tt_ov_i",
         Featured: false,
       yearOfRelease: 1973
       
@@ -169,7 +193,8 @@ let myMovies = [
             Bio:"Tatsuo Satō is a Japanese anime director most famous for Martian Successor Nadesico.",
             Birth:"1964-05-07"
         },
-        Image:"https://www.imdb.com/title/tt0107692/mediaviewer/rm2889614848/?ref_=tt_ov_i",
+        Actors: ['Koichi Yamadera', 'Takeshi Aono'],
+        ImagePath:"https://www.imdb.com/title/tt0107692/mediaviewer/rm2889614848/?ref_=tt_ov_i",
         Featured: false,
         yearOfRelease: 2003
        
@@ -181,8 +206,9 @@ let myMovies = [
 app.use(morgan('common'));
 // static function for serving all the files at once
 app.use(express.static('public'));
-// body-parser function 
+// body-parser functions 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
 
@@ -199,62 +225,188 @@ app.get('/documentation', (req, res) => {
 
 // brings a json request on routing (ALL MOVIES)
 app.get('/movies', (req, res) => {
-    res.send(myMovies);
+  Movies.find()
+    .then((movies) => {
+        res.status(201).json(movies);
+    })
+    .catch((err) => {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    });
 });
-
 
 //Get movies by Title
-app.get('/movies/:title', (req, res) => {
-    res.json(
-      myMovies.find(movie => {
-        return movie.title === req.params.title;
+app.get('/movies/:Title', (req, res) => {
+  Movies.findOne({Title: req.params.Title})
+    .then((movie) => {
+      res.json(movie);
+  })
+  .catch((err) => {
+      res.status(500).send('Error: ' + err);
+  });
+});
+  
+
+//Get Genre data
+app.get('/genre/:Name', (req, res) => {
+  Movies.findOne({'Genre.Name': req.params.Name })
+      .then((movie) => {
+          res.json(movie.Genre.Description);
       })
-    );
+      .catch((err) => {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+      });
+})
+    
+
+//Get director data
+app.get('/director/:Name', (req, res) => {
+  Movies.findOne({'Director.Name': req.params.Name })
+  .then((movie) => {
+      res.json(movie.Director);
+  })
+  .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+  });
 });
 
-
-//Get movies by Genre
-app.get('/genres/:genre', (req, res) => {
-    res.json(
-      myMovies.find(movieGenre => {
-        return movieGenre.genre === req.params.genre;
+// gets all users
+app.get('/users', (req, res) => {
+  Users.find()
+      .then((users) => {
+          res.status(201).json(users);
       })
-    );
+      .catch((err) => {
+          console.error(err);
+          res.status(500).send('Error:' + err);
+      });
 });
 
-//Get movies by director
-app.get('/directors/:director', (req, res) => {
-    res.json(
-      myMovies.find(movieDirector => {
-        return movieDirector.director === req.params.director;
+// gets a user by username
+app.get('/users/:Username', (req, res) => {
+  Users.findOne({ Username: req.params.Username })
+      .then((users) => {
+          res.json(users);
       })
-    );
+      .catch((err) => {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+      });
 });
-// Creation of a new users by UUID
-app.post('/users/:newUser', (req, res) => {
-    res.send('POST request with message (new user created!)');
+
+// Creation of a new users
+//Add a user
+/* JSON format which is expected 
+{
+  ID: Integer,
+  Username: String,
+  Password: String,
+  Email: String,
+  Birthday: Date
+}*/
+app.post('/users', (req, res) => {
+  Users.findOne({ Username: req.body.Username })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.Username + 'already exists');
+      } else {
+        Users
+        // creation  of user using the parameters below
+          .create({
+            Username: req.body.Username,
+            Password: req.body.Password,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday
+          })
+          // creation of the new user
+          .then((user) =>{res.status(201).json(user) })
+        .catch((error) => {
+          console.error(error);
+          res.status(500).send('Error: ' + error);
+        })
+      }
+    })
+    // error handling
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
 });
+  
+    
 
 //Update users information on app
-app.put('/users/:userName', (req, res) => {
-    res.send('PUT request with message (username updated!)');
+app.put('/users/:Username', (req, res) => {
+    Users.findOneAndUpdate({ Username: req.params.Username },
+      { $set: {
+          Username: req.body.Username,
+          Password: req.body.Password,
+          Email: req.body.Email,
+          Birthday: req.body.Birthday
+      }
+  },
+  { new: true }, // this makes sure that the updated document is returned
+  (err, updatedUser) => {
+      if(err) {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+      } else {
+          res.json(updatedUser);
+      }
+  });
 });
 
 // Creation of favourite movie list
-app.post('/movies/:addFavourite', (req, res) => {
-    res.send('POST request with message (movie added successfully!)');
+app.post('/users/:Username/movies/:MovieID', (req, res) => {
+  Users.findOneAndUpdate({ Username: req.params.Username }, 
+      { $push: { FavoriteMovies: req.params.MovieID }
+  },
+  { new: true }, // this line makes sure that the updated document is returned
+  (err, updatedUser) => {
+      if (err) {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+      } else {
+          res.json(updatedUser);
+      }
+  });
 });
 
 //Removal of movies from favorite movie list
-app.delete('/movies/:movieTitle', (req, res) => {
-    res.send('DELETE request with message (movie deleted successfully!)');
+app.delete('/users/:Username/movies/:MovieId', (req, res) => {
+    Users.findOneAndUpdate({ Username: req.params.Username }, 
+      { $pull: { FavoriteMovies: req.params.MovieID }
+  },
+  { new: true }, // this line makes sure that the updated document is returned
+  (err, updatedUser) => {
+      if (err) {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+      } else {
+          res.json(updatedUser);
+      }
+  });
+});
     
-});
 
-//Deregistration of a user (useremail)
-app.delete('/users/:username', (req, res) => {
-    res.send('DELETE request with message (useremail deregistered from the app!)');
+//Deregistration of a user (username)
+app.delete('/users/:Username', (req, res) => {
+  Users.findOneAndRemove({ Username: req.params.Username })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.Username + ' was not found');
+      } else {
+        res.status(200).send(req.params.Username + ' was deleted.');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
+    
 
 // error handling middleware function
 app.use((err, req, res, next) => {
@@ -266,3 +418,5 @@ app.use((err, req, res, next) => {
 app.listen(8080, () =>{
     console.log('Your app is listening on port 8080.');
 });
+
+

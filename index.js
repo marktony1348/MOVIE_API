@@ -5,6 +5,8 @@ const Movies = Models.Movie;
 const Users = Models.User;
 const Genres = Models.Genre;
 const Directors = Models.Director
+const path = require('path');
+require('dotenv').config({path: path.join(__dirname, '.env')});
 
 // local database
 // mongoose.connect('mongodb://localhost:27017/myFlixDb', 

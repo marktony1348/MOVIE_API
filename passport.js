@@ -47,5 +47,3 @@ passport.use(new JWTStrategy({
     });
 }));
 
-
-

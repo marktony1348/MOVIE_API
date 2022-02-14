@@ -210,6 +210,21 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// refactored domain access
+const cors = require('cors');
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+app.use(cors({
+  origin: (origin, callback) => {
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){ 
+      // If a specific origin isn’t found on the list of allowed origins
+      let message = 'The CORS policy for this application does not allow access from origin ' + origin;
+      return callback(new Error(message ), false);
+    }
+    return callback(null, true);
+  }
+}));
+
 // This imports auth.js link-brdge to the project
 // This ensures that Express is available in your “auth.js” file 
 let auth = require('./auth')(app);
@@ -217,7 +232,11 @@ let auth = require('./auth')(app);
 const passport = require('passport');
 require('./passport');
 
+app.use(passport.initialize());
 
+const { check, validationResult } = require('express-validator');
+
+app.use(cors());
 
 // GET requests
 // gives of the response
@@ -314,7 +333,25 @@ app.get('/users/:Username', passport.authenticate('jwt', { session: false }), (r
   Email: String,
   Birthday: Date
 }*/
-app.post('/users', (req, res) => {
+app.post('/users', 
+  [
+    check('Username', 'Username is required').isLength({min: 5}),
+    check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+    check('Password', 'Password is required').not().isEmpty(),
+    check('Email', 'Email does not appear to be valid').isEmail()
+  ], (req, res) => {
+    
+  // check the validation object for errors
+  let errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
+  // hashpassword methology aligned from  model.js
+  let hashedPassword = Users.hashPassword(req.body.Password);
+
+  // search area to identify an existing username
   Users.findOne({ Username: req.body.Username })
     .then((user) => {
       if (user) {
@@ -324,7 +361,7 @@ app.post('/users', (req, res) => {
         // creation  of user using the parameters below
           .create({
             Username: req.body.Username,
-            Password: req.body.Password,
+            Password: hashedPassword,
             Email: req.body.Email,
             Birthday: req.body.Birthday
           })
@@ -346,7 +383,21 @@ app.post('/users', (req, res) => {
     
 
 //Update users information on app
-app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.put('/users/:Username', passport.authenticate('jwt', { session: false }), 
+  [
+    check('Username', 'Username is required').isLength({min: 5}),
+    check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+    check('Password', 'Password is required').not().isEmpty(),
+    check('Email', 'Email does not appear to be valid').isEmail()
+  ], (req, res) => {
+  
+  // check the validation object for errors
+  let errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
     Users.findOneAndUpdate({ Username: req.params.Username },
       { $set: {
           Username: req.body.Username,

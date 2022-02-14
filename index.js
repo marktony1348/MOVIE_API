@@ -12,7 +12,7 @@ const Directors = Models.Director
 //   { useNewUrlParser: true, useUnifiedTopology: true });
 
 // online database
-mongoose.connect('process.env.MONGO_URI', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('process.env.MONGO_URL', { useNewUrlParser: true, useUnifiedTopology: true });
 
 const express = require('express');
   morgan = require('morgan');

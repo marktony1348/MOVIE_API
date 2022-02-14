@@ -5,15 +5,14 @@ const Movies = Models.Movie;
 const Users = Models.User;
 const Genres = Models.Genre;
 const Directors = Models.Director
-const path = require('path');
-require('dotenv').config({path: path.join(__dirname, '.env')});
+
 
 // local database
 // mongoose.connect('mongodb://localhost:27017/myFlixDb', 
 //   { useNewUrlParser: true, useUnifiedTopology: true });
 
 // online database
-mongoose.connect('process.env.CONNECTION_URI',  { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('process.env.CONNECTION_URI', { useNewUrlParser: true, useUnifiedTopology: true });
 
 const express = require('express');
   morgan = require('morgan');

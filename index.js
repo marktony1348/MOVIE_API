@@ -246,17 +246,17 @@ app.use(cors());
 // GET requests
 // gives of the response
 // update of all endpoints with the authe/autho of registered users with respect to CRUD activities.
-app.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get('/', (req, res) => {
     res.send('Welcome to my cineverse');
 });
 
 // routes to the documentation page (html)
-app.get('/documentation', passport.authenticate('jwt', { session: false }), (req, res) => {                  
+app.get('/documentation', (req, res) => {                  
     res.sendFile('public/documentation.html', { root: __dirname });
 });
 
 // brings a json request on routing (ALL MOVIES)
-app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.get('/movies',  (req, res) => {
   Movies.find()
     .then((movies) => {
         res.status(201).json(movies);

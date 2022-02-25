@@ -40,7 +40,7 @@ let myMovies = [
             Birth:"1974-11-08"
         },
         Actors: ['Junko Takeuchi', 'Kate Higgins'],
-        ImagePath:"https://www.imdb.com/title/tt0988824/mediaviewer/rm1490944256/?ref_=tt_ov_i",
+        ImagePath:"https://upload.wikimedia.org/wikipedia/en/thumb/9/94/NarutoCoverTankobon1.jpg/220px-NarutoCoverTankobon1.jpg",
         Featured: true,
         yearOfRelease: 2007
     },
@@ -58,7 +58,7 @@ let myMovies = [
           Birth:"1978-05-08"
       },
       Actors: ['Kellen Goff', 'Ben Diskin'],
-      ImagePath:"https://www.imdb.com/title/tt10233448/mediaviewer/rm678534401/?ref_=tt_ov_i",
+      ImagePath:"https://upload.wikimedia.org/wikipedia/en/5/51/Vinland_Saga_volume_01_cover.jpg",
       Featured: false,
       yearOfRelease: 2019    
     },
@@ -75,7 +75,7 @@ let myMovies = [
             Birth:"1966-10-19"
         },
         Actors: ['Bill Murray', 'Neel Sethi'],
-        ImagePath:"https://www.imdb.com/title/tt3040964/mediaviewer/rm1298457856/?ref_=tt_ov_i",
+        ImagePath:"https://upload.wikimedia.org/wikipedia/en/a/a4/The_Jungle_Book_%282016%29.jpg",
         Featured: false,
         yearOfRelease: 2016
     },
@@ -92,7 +92,7 @@ let myMovies = [
             Birth:"1975-06-06"
         },
         Actors: ['Omari Hardwick', 'Lela Loren'],
-        ImagePath:"https://www.imdb.com/title/tt3281796/mediaviewer/rm3770784769/?ref_=tt_ov_i",
+        ImagePath:"https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Power_Opening_Title.jpg/250px-Power_Opening_Title.jpg",
         Featured: false,
       yearOfRelease: 2014
     },
@@ -109,7 +109,7 @@ let myMovies = [
             Birth:"1948-01-16"
         },
         Actors: ['Kurt Russell', 'Kim Cattrall', 'Dennis Dun'],
-        ImagePath:"https://www.imdb.com/title/tt0090728/mediaviewer/rm3225041920/?ref_=tt_ov_i",
+        ImagePath:"https://upload.wikimedia.org/wikipedia/en/thumb/7/76/Big_Trouble_in_Little_China_Film_Poster.jpg/220px-Big_Trouble_in_Little_China_Film_Poster.jpg",
         Featured: false,
       yearOfRelease: 1986  
       
@@ -127,7 +127,7 @@ let myMovies = [
           Birth:"1963-03-27"
       },
       Actors: ['Jamie Foxx', 'Christoph Waltz', 'Leonardo DiCaprio'],
-      ImagePath:"https://www.imdb.com/title/tt1853728/mediaviewer/rm958180352/?ref_=tt_ov_i",
+      ImagePath:"https://upload.wikimedia.org/wikipedia/en/8/8b/Django_Unchained_Poster.jpg",
       Featured: false,
       yearOfRelease: 2013
        
@@ -162,7 +162,7 @@ let myMovies = [
           Birth:"1963-03-27"
       },
       Actors: ['Brad Pitt', 'Eli Roth', 'Diane Kruger'],
-      ImagePath:"https://www.imdb.com/title/tt0361748/mediaviewer/rm3163035648/?ref_=tt_ov_i",
+      ImagePath:"https://upload.wikimedia.org/wikipedia/en/thumb/0/00/Biker_Mice_from_Mars_logo.jpg/250px-Biker_Mice_from_Mars_logo.jpg",
       Featured: false,
       yearOfRelease: 2009
        
@@ -181,7 +181,7 @@ let myMovies = [
             Death:"1997-02-04"
         },
         Actors: ['Bruce Lee', 'John Saxon'],
-        ImagePath:"https://www.imdb.com/title/tt0070034/mediaviewer/rm638853120/?ref_=tt_ov_i",
+        ImagePath:"https://upload.wikimedia.org/wikipedia/en/thumb/e/ef/Enter_the_dragon.jpg/220px-Enter_the_dragon.jpg",
         Featured: false,
       yearOfRelease: 1973
       
@@ -199,7 +199,7 @@ let myMovies = [
             Birth:"1964-05-07"
         },
         Actors: ['Koichi Yamadera', 'Takeshi Aono'],
-        ImagePath:"https://www.imdb.com/title/tt0107692/mediaviewer/rm2889614848/?ref_=tt_ov_i",
+        ImagePath:"https://upload.wikimedia.org/wikipedia/en/thumb/f/f4/Ninja-Scroll-Poster.jpg/220px-Ninja-Scroll-Poster.jpg",
         Featured: false,
         yearOfRelease: 2003
        

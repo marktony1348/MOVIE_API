@@ -256,7 +256,7 @@ app.get('/documentation', (req, res) => {
 });
 
 // brings a json request on routing (ALL MOVIES)
-app.get('/movies', passport.authenticate('jwt', { session: false }),  (req, res) => {
+app.get('/movies',  (req, res) => {
   Movies.find()
     .then((movies) => {
         res.status(201).json(movies);

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+<div id="main">
+    <h1 class="page-title">MOVIE API DOCUMENTATION</h1>    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+// Imports the express module and the Morgan, bodyParser and uuid module
+const express = require('express');
+  morgan = require('morgan');
+  bodyParser = require('body-parser');
+  uuid = require('uuid');
+
+const req = require('express/lib/request');
+const res = require('express/lib/response')
+const app = express();
+
+// refactored domain access to enable cross site sharing
+const cors = require('cors');
+let allowedOrigins = ['http://localhost:1234', 'http://testsite.com', 'https://marcotony-13489.netlify.app'];
+app.use(cors({
+  origin: (origin, callback) => {
+   if(!origin) return callback(null, true);
+   if(allowedOrigins.indexOf(origin) === -1){ 
+// If a specific origin isn'/t found on the list of allowed origins
+let message = 'The CORS policy for this application does not allow access from origin ' + origin;
+ return callback(new Error(message ), false);
+  return callback(null, true);
+}
+}));
+
+// This section imports auth.js link-brdge to the project
+// This ensures that Express is available in your “auth.js” file 
+let auth = require('./auth')(app);
+
+//requires the Passport module and imports passport.js
+const passport = require('passport');
+require('./passport');
+app.use(passport.initialize());
+
+// requires express validator to validate user input on the server side
+const { check, validationResult } = require('express-validator');
+
+const mongoose = require('mongoose');
+const Models = require('./models.js');
+
+const Movies = Models.Movie;
+const Users = Models.User;
+const Genres = Models.Genre;
+const Directors = Models.Director
+
+// local database which allows a connection to the mongoose module
+/*mongoose.connect('mongodb://localhost:27017/myFlixDb',  
+ { useNewUrlParser: true, useUnifiedTopology: true });*/
+
+// online database which also interacts with the mongoose module 
+mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+// after importing express it needs to be added to the app in order to start using it
+const app = express();
+
+// reads the data out of the request body 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+// Morgan middleware library in use to log all requests to the terminal
+app.use(morgan('common'));
+// Function to serve all static files inside one folder
+app.use(express.static('public'));
+
+
+/* detailed request info (CRUD) for all the endpoints as stated below */ 
+// GET requests
+/*gives of the response and update of all endpoints with the 
+authe/autho of registered users with respect to CRUD activities.*/
+/**
+ * redirects root to index.html
+ * @param {express.request} req
+ * @param {express.response} res
+ */
+app.get('/', (req, res) => {
+    res.send('Welcome to my cineverse');
+});
+
+// routes to the documentation page (html)
+/**
+ * end-point: '/documentation
+ * @param {express.request} req
+ * @param {express.response} res
+ */
+app.get('/documentation', (req, res) => {                  
+    res.sendFile('public/documentation.html', { root: __dirname });
+});
+
+// brings a json request on routing (ALL MOVIES)
+* end-point: /movies
+* method: get
+* get all movies
+* @param {express.request} req
+* @param {express.response} res
+*/
+app.get('/movies', passport.authenticate('jwt', { session: false }),  (req, res) => {
+  Movies.find()
+    .then((movies) => {
+        res.status(201).json(movies);
+    })
+    .catch((err) => {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    });
+});
+
+//Get movies by Title
+/**
+ * end-point: /movies/:Title 
+ * method: gt
+ * movies by title
+ * @param {express.request} req
+ * @param {express.response} res
+ */
+app.get('/movies/:Title',  (req, res) => {
+  Movies.findOne({Title: req.params.Title})
+    .then((movie) => {
+      res.json(movie);
+  })
+  .catch((err) => {
+      res.status(500).send('Error: ' + err);
+  });
+});
+  
+
+//Get Genre data
+/**
+ * end-point: /genre/:Name
+ * method: get
+ * description of a genre by name 
+ * @param {express.request} req
+ * @param {express.response} res
+ */
+app.get('/genre/:Name', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Movies.findOne({'Genre.Name': req.params.Name })
+      .then((movie) => {
+          res.json(movie.Genre.Description);
+      })
+      .catch((err) => {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+      });
+})
+    
+
+//Get director data
+/**
+ * end-point: /director/:Name
+ * method: get
+ * description of a director by name 
+ * @param {express.request} req
+ * @param {express.response} res
+ */
+app.get('/director/:Name', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Movies.findOne({'Director.Name': req.params.Name })
+  .then((movie) => {
+      res.json(movie.Director);
+  })
+  .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+  });
+});
+
+// gets all users
+/**
+ * end-point: /users
+ * method: get
+ * get all the user profiles 
+ * @param {express.request} req
+ * @param {express.response} res
+ */
+app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Users.find()
+      .then((users) => {
+          res.status(201).json(users);
+      })
+      .catch((err) => {
+          console.error(err);
+          res.status(500).send('Error:' + err);
+      });
+});
+
+// gets a user by username
+/**
+ * end-point: /users/:Username
+ * method: get
+ * get a user by their Username
+ * @param {express.request} req
+ * @param {express.response} res
+ */
+app.get('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Users.findOne({ Username: req.params.Username })
+      .then((users) => {
+          res.json(users);
+      })
+      .catch((err) => {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+      });
+});
+
+// Creation of a new users
+//Add a user
+/* JSON format which is expected 
+{
+  ID: Integer,
+  Username: String,
+  Password: String,
+  Email: String,
+  Birthday: Date
+}*/
+/**
+ * end-point: /users 
+ * method: post
+ * register user profile
+ * expects Username, Password, Email, Birthday
+ * @param {express.request} req
+ * @param {express.response} res
+ */
+app.post('/users', 
+  [
+  // checks that the fields contain something, then checks that the data follows the correct format
+    check('Username', 'Username is required').isLength({min: 5}),
+    check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+    check('Password', 'Password is required').not().isEmpty(),
+    check('Email', 'Email does not appear to be valid').isEmail()
+  ], (req, res) => {
+    
+  // check the validation object for errors
+  let errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
+  /*hashpassword methology aligned from  model.js which hashes any password enteres by
+   the user when registering before storing it in the MongoDB database */
+
+  // search area to identify an existing username
+  Users.findOne({ Username: req.body.Username })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.Username + 'already exists');
+      } else {
+        Users
+        // creation of user if the user does not exist, using the parameters below
+          .create({
+            Username: req.body.Username,
+            Password: hashedPassword,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday
+          })
+          /* creation of the new user with this callback as a response of successful creation with regards
+          to the parameters used above*/ 
+          .then((user) =>{res.status(201).json(user) })
+        .catch((error) => {    // this area catches any errors with respect to the create user above by mongoose
+          console.error(error);
+          res.status(500).send('Error: ' + error);
+        })
+      }
+    })
+    // error handling also for detection by mongoose 
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
+});
+  
+    
+
+//Update users information on app
+/**
+ * end-point: /users/:Username
+ * method: put
+ * update user information
+ * @param {express.request} req
+ * @param {express.response} res
+ */
+app.put('/users/:Username', passport.authenticate('jwt', { session: false }), 
+  [
+  // checks that the fields are in requirement to the correct format
+    check('Username', 'Username is required').isLength({min: 5}),
+    check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+    check('Password', 'Password is required').not().isEmpty(),
+    check('Email', 'Email does not appear to be valid').isEmail()
+  ], (req, res) => {
+  
+  // check the validation object for errors
+  let errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
+    Users.findOneAndUpdate({ Username: req.params.Username },
+      { $set: {
+          Username: req.body.Username,
+          Password: req.body.Password,
+          Email: req.body.Email,
+          Birthday: req.body.Birthday
+      }
+  },
+  { new: true },    // this makes sure that the updated document is returned
+  (err, updatedUser) => {
+      if(err) {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+      } else {
+          res.json(updatedUser);
+      }
+  });
+});
+
+// Creation of favourite movie list
+/**
+ * end-point: /users/:Username/movies/:MovieID
+ * method: post
+ * add movie to user's favorites
+ * @param {express.request} req
+ * @param {express.response} res
+ */
+app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Users.findOneAndUpdate({ Username: req.params.Username }, 
+      { $push: { FavoriteMovies: req.params.MovieID }
+  },
+  { new: true },         // this line makes sure that the updated document is returned
+  (err, updatedUser) => {
+      if (err) {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+      } else {
+          res.json(updatedUser);
+      }
+  });
+});
+
+//Removal of movies from favorite movie list
+/**
+ * end-point: /users/:Username/movies/:MovieID
+ * method: delete
+ * removes movie to user's favorites
+ * @param {express.request} req
+ * @param {express.response} res
+ */
+app.delete('/users/:Username/movies/:MovieId', passport.authenticate('jwt', { session: false }), (req, res) => {
+    Users.findOneAndUpdate({ Username: req.params.Username }, 
+      { $pull: { FavoriteMovies: req.params.MovieID }
+  },
+  { new: true },     // this line makes sure that the updated document is returned
+  (err, updatedUser) => {
+      if (err) {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+      } else {
+          res.json(updatedUser);
+      }
+  });
+});
+    
+
+//Deregistration of a user (username)
+/**
+ * end-point: /users/:Username
+ * method: delete
+ * delete the users profile
+ * @param {express.request} req
+ * @param {express.response} res
+ */
+app.delete('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Users.findOneAndRemove({ Username: req.params.Username })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.Username + ' was not found');
+      } else {
+        res.status(200).send(req.params.Username + ' was deleted.');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+    
+
+// error handling middleware function that will log all application-level errors to the terminal
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('oop\'s something has gone wrong!');
+});
+
+// listen for requests- dynamically set ports with HTTP Port 8080 as the default Port
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0',() => {
+    console.log('Your app is listening on Port ' + port);
+});</code></pre>
+    </article>
+</section>
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Jun 07 2022 16:32:45 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

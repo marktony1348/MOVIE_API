@@ -218,18 +218,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // refactored domain access
 const cors = require('cors');
 let allowedOrigins = ['http://localhost:1234', 'http://testsite.com', 'https://marcotony-13489.netlify.app'];
-app.use(cors({
-  origin: (origin, callback) => {
-    if(!origin) return callback(null, true);
-    if(allowedOrigins.indexOf(origin) === -1){ 
-      // If a specific origin isn’t found on the list of allowed origins
-      let message = 'The CORS policy for this application does not allow access from origin ' + origin;
-      return callback(new Error(message ), false);
-    }
-    return callback(null, true);
-  }
-}));
-
+// app.use(cors({
+//   origin: (origin, callback) => {
+//     if(!origin) return callback(null, true);
+//     if(allowedOrigins.indexOf(origin) === -1){ 
+//       // If a specific origin isn’t found on the list of allowed origins
+//       let message = 'The CORS policy for this application does not allow access from origin ' + origin;
+//       return callback(new Error(message ), false);
+//     }
+//     return callback(null, true);
+//   }
+// }));
+app.use(cors());
 // This imports auth.js link-brdge to the project
 // This ensures that Express is available in your “auth.js” file 
 let auth = require('./auth')(app);
@@ -241,7 +241,7 @@ app.use(passport.initialize());
 
 const { check, validationResult } = require('express-validator');
 
-app.use(cors());
+// app.use(cors());
 
 // GET requests
 // gives of the response
